@@ -82,10 +82,15 @@ namespace Chat
             string message = this.messageBox.Text;
             if (message.Length != 0)
             {
-                printMessage(login, message);
+                string data = "{type:\"message\",data:\"" + message + "\"}";
+            if (connection.POST(data) == "done") {
+                    printMessage(login, message);
 
-                this.messageBox.Text = "";
+                    this.messageBox.Text = "";
+                }
+      
             }
+            
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -93,7 +98,7 @@ namespace Chat
             OpenFileDialog openFile = new OpenFileDialog();
 
             openFile.InitialDirectory = "c:\\";
-            openFile.Filter = "Text files(*.txt; *.rtf)| *.txt; *.rtf |Audio files(*.wav, *.aiff)| *.wav; *.aiff |Image files(*.tiff; *.bmp; *.gif )| *.tiff; *.bmp; *.gif| *.All files (*.*)|*.*";
+            openFile.Filter = "Text files(*.txt; *.rtf)| *.txt; *.rtf; |Audio files(*.wav, *.aiff)| *.wav; *.aiff; |Image files(*.tif; *.bmp; *.gif )| *.tif; *.bmp; *.gif;| *.All files (*.*)|*.*;";
             string fileDir = "";
             if (openFile.ShowDialog() == DialogResult.OK)
             {
