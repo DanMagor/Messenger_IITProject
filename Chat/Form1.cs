@@ -20,7 +20,7 @@ namespace Chat
         public Form1()        {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-     //       this.connection = new Connection();
+            this.connection = new Connection();
         }
 
         private void Form1_Load(object sender, EventArgs e)
