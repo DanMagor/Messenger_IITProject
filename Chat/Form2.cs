@@ -82,8 +82,8 @@ namespace Chat
             string message = this.messageBox.Text;
             if (message.Length != 0)
             {
-                string data = "{type:\"message\",data:\"" + message + "\"}";
-            if (connection.POST(data) == "done") {
+                string data = "{type:\"message\",data:\"" + message + "\",login:\""+this.login+"\"}";
+                if (connection.POST(data) == "done") {
                     printMessage(login, message);
 
                     this.messageBox.Text = "";

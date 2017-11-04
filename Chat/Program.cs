@@ -28,7 +28,7 @@ namespace Chat
     {
 
     
-        static string url = "127.0.0.1";
+        static string url = "http://localhost:4200/";
          
         
 
@@ -37,31 +37,40 @@ namespace Chat
            
             
         }
-        public string POST( string Data)
+        public string POST( string postData)
         {
-            WebRequest req = WebRequest.Create(url);
-            req.Method = "POST";
-            req.Timeout = 100000;
-            req.ContentType = "application/x-www-form-urlencoded";
-            byte[] sentData = Encoding.GetEncoding(1251).GetBytes(Data);
-            req.ContentLength = sentData.Length;
-            Stream sendStream = req.GetRequestStream();
-            sendStream.Write(sentData, 0, sentData.Length);
-            sendStream.Close();
-            WebResponse res = req.GetResponse();
-            Stream ReceiveStream = res.GetResponseStream();
-            StreamReader sr = new StreamReader(ReceiveStream, Encoding.UTF8);
-            //Кодировка указывается в зависимости от кодировки ответа сервера
-            Char[] read = new Char[256];
-            int count = sr.Read(read, 0, 256);
-            string Out = String.Empty;
-            while (count > 0)
-  {
-                String str = new String(read, 0, count);
-                Out += str;
-                count = sr.Read(read, 0, 256);
-            }
-            return Out;
+            WebRequest request = WebRequest.Create(url);
+            // Set the Method property of the request to POST.
+            request.Method = "POST";
+            // Create POST data and convert it to a byte array.
+            byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+            // Set the ContentType property of the WebRequest.
+            request.ContentType = "application/x-www-form-urlencoded";
+            // Set the ContentLength property of the WebRequest.
+            request.ContentLength = byteArray.Length;
+            // Get the request stream.
+            Stream dataStream = request.GetRequestStream();
+            // Write the data to the request stream.
+            dataStream.Write(byteArray, 0, byteArray.Length);
+            // Close the Stream object.
+            dataStream.Close();
+            // Get the response.
+            WebResponse response = request.GetResponse();
+            // Display the status.
+            Console.WriteLine(((HttpWebResponse)response).StatusDescription);
+            // Get the stream containing content returned by the server.
+            dataStream = response.GetResponseStream();
+            // Open the stream using a StreamReader for easy access.
+            StreamReader reader = new StreamReader(dataStream);
+            // Read the content.
+            string responseFromServer = reader.ReadToEnd();
+            // Display the content.
+
+            // Clean up the streams.
+            reader.Close();
+            dataStream.Close();
+            response.Close();
+            return responseFromServer;
         }
         /*   public bool sendLogin(string login)
            {

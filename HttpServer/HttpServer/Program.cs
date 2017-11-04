@@ -44,13 +44,23 @@ namespace HttpServer
 
             void Proccess(HttpListenerContext context)
             {
-                string filename = context.Request.Url.AbsolutePath;
+                string filename = context.Request.Url.Query;
                 Console.WriteLine(filename);
 
                 HttpListenerRequest request = context.Request;
                 HttpListenerResponse response = context.Response;
 
-                string responseString = "<HTML><BODY> Request recieved! </BODY></HTML>";
+
+                string text;
+                using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
+                {
+                    text = reader.ReadToEnd();
+                }
+
+                Console.WriteLine(text);
+
+                //string responseString = "<HTML><BODY> Request recieved! </BODY></HTML>";
+                string responseString = "done";
                 byte[] buffer = Encoding.UTF8.GetBytes(responseString);
                 response.ContentLength64 = buffer.Length;
 
