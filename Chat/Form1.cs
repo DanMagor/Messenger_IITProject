@@ -14,13 +14,13 @@ namespace Chat
 
     public partial class Form1 : Form
     {
-        private Connection connection;
+        private Connection connection=null;
         private string login;
 
         public Form1()        {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            this.connection = new Connection();
+     //       this.connection = new Connection();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -31,7 +31,9 @@ namespace Chat
         private void button1_Click(object sender, EventArgs e)
         {
            this.login = this.loginBox.Text;
-            if (login.Length != 0)
+            startChat(connection, this.login);
+           
+        /*    if (login.Length != 0)
             {
                 MessageBox.Show(this.loginBox.Text);
                 if (connection.sendLogin(login))
@@ -44,11 +46,15 @@ namespace Chat
             }
             else {
                 MessageBox.Show("Please input login");
-            }
+            }*/
         }
 
         private void startChat(Connection connection,string login) {
             Form2 form = new Form2(connection, login);
+            form.Show();
+            this.Hide();
+            form.Closed += (s, args) => this.Close();
+            form.Show();
         }
     }
 
