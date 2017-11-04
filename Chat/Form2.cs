@@ -80,17 +80,23 @@ namespace Chat
         private void sendMessage_Click(object sender, EventArgs e)
         {
             string message = this.messageBox.Text;
+            string constMessage = message;
+            string mimeType = "msg";
+            byte[] byteArray = Encoding.UTF8.GetBytes(message);
+
+            message = Convert.ToBase64String(byteArray);
+
             if (message.Length != 0)
             {
-                string data = "{type:\"message\",data:\"" + message + "\",login:\""+this.login+"\"}";
-                if (connection.POST(data) == "done") {
-                    printMessage(login, message);
-
+                string data = "{\"login\":\"" + this.login + "\",\"data\":\"" + message + "\",\"offset\":\"0\"}";
+                if (connection.POST(mimeType, data) == "done")
+                {
+                    printMessage(login, constMessage);
                     this.messageBox.Text = "";
                 }
-      
+
             }
-            
+
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -100,25 +106,53 @@ namespace Chat
             openFile.InitialDirectory = "c:\\";
             openFile.Filter = "Text files(*.txt; *.rtf)| *.txt; *.rtf; |Audio files(*.wav, *.aiff)| *.wav; *.aiff; |Image files(*.tif; *.bmp; *.gif )| *.tif; *.bmp; *.gif;| *.All files (*.*)|*.*;";
             string fileDir = "";
+            string fileExt = "";
             if (openFile.ShowDialog() == DialogResult.OK)
             {
                 MessageBox.Show(openFile.FileName);
                 fileDir = openFile.FileName;
+                string[] splitted = fileDir.Split('.');
+                fileExt = splitted[splitted.Length - 1];
             }
             if (fileDir.Length != 0)
             {
-                printMessage(login, "aasadasafa");
+                
                 byte[] byteArr = File.ReadAllBytes(fileDir);
-                string pop = "";
-                foreach (byte s in byteArr) {
-                    pop += s.ToString();
-                    pop += " ";
+                string b64String = Convert.ToBase64String(byteArr);
+                string[] splitted = fileDir.Split('\\');
+                string fileName = splitted[splitted.Length - 1];
+                string data = "{\"login\":\"" + this.login + "\",\"data\":\"" + b64String + "\",\"Fname\":\"" + fileName + "\",\"offset\":\"0\"}";
+
+                if (connection.POST(fileExt, data) == "done")
+                {
+                    MessageBox.Show("File successfully sent");
+                    
+                    printMessage(login, "file:///"+fileDir.Replace(' ', (char)160));
+                    //ssylka na otkrytie
                 }
-                MessageBox.Show(pop);
+
             }
+
+           
             // string s=openFile.ShowDialog().ToString;
             // MessageBox.Show(s);
 
+        }
+        private void Link_Clicked(object sender, LinkClickedEventArgs e)
+        {
+            string linkText = e.LinkText.Replace((char)160, ' ');
+
+            // For some reason rich text boxes strip off the 
+            // trailing ')' character for URL's which end in a 
+            // ')' character, so if we had a '(' opening bracket
+            // but no ')' closing bracket, we'll assume there was
+            // meant to be one at the end and add it back on. This 
+            // problem is commonly encountered with wikipedia links!
+
+            if ((linkText.IndexOf('(') > -1) && (linkText.IndexOf(')') == -1))
+                linkText += ")";
+
+            System.Diagnostics.Process.Start(e.LinkText);
         }
     }
 }

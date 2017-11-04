@@ -71,6 +71,10 @@
             this.messageViewer.Size = new System.Drawing.Size(885, 493);
             this.messageViewer.TabIndex = 3;
             this.messageViewer.Text = "";
+            this.messageViewer.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.Link_Clicked);
+                //new System.EventHandler(this.Link_Clicked);
+
+
             // 
             // button1
             // 

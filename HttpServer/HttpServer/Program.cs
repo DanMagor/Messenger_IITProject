@@ -49,7 +49,7 @@ namespace HttpServer
 
                 HttpListenerRequest request = context.Request;
                 HttpListenerResponse response = context.Response;
-
+                Console.WriteLine(request.ContentType);
 
                 string text;
                 using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))

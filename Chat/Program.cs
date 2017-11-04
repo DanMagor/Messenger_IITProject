@@ -29,15 +29,24 @@ namespace Chat
 
     
         static string url = "http://localhost:4200/";
-         
-        
+
+        private static IDictionary<string, string> _mappings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            {"txt",  "text/plain"},
+            {"aiff", "audio/aiff"},
+            {"bmp",  "image/bmp"},
+            {"gif", "image/gif"},
+            {"rtf", "application/rtf"},
+            {"tif", "image/tif"},
+            {"wav", "audio/wav"},
+            {"msg", "text/message"}
+        };
 
         public Connection()
         {
-           
-            
         }
-        public string POST( string postData)
+
+        public string POST(string mimeType, string postData)
         {
             WebRequest request = WebRequest.Create(url);
             // Set the Method property of the request to POST.
@@ -45,7 +54,7 @@ namespace Chat
             // Create POST data and convert it to a byte array.
             byte[] byteArray = Encoding.UTF8.GetBytes(postData);
             // Set the ContentType property of the WebRequest.
-            request.ContentType = "application/x-www-form-urlencoded";
+            request.ContentType = _mappings[mimeType];
             // Set the ContentLength property of the WebRequest.
             request.ContentLength = byteArray.Length;
             // Get the request stream.
@@ -72,6 +81,8 @@ namespace Chat
             response.Close();
             return responseFromServer;
         }
+        
+        
         /*   public bool sendLogin(string login)
            {
 
