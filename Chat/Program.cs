@@ -81,37 +81,6 @@ namespace Chat
             response.Close();
             return responseFromServer;
         }
-        
-        
-        /*   public bool sendLogin(string login)
-           {
-
-               byte[] data = Encoding.Unicode.GetBytes(login);
-               socket.Send(data);
-
-               data = new byte[256]; // буфер для ответа
-               StringBuilder builder = new StringBuilder();
-               int bytes = 0; // количество полученных байт
-
-               do
-               {
-                   bytes = socket.Receive(data, data.Length, 0);
-                   builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-               }
-               while (socket.Available > 0);
-               string callback = builder.ToString();
-               if (callback == "logged")
-               {
-                   return true;
-               }
-               else
-               {
-                   return false;
-               }
-               // return 0;
-           }*/
-
-
-
+       
     }
 }

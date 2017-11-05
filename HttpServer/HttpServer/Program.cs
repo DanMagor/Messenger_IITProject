@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Newtonsoft.Json;
 using System.Threading;
 
 namespace HttpServer
@@ -26,6 +27,7 @@ namespace HttpServer
             
             listener.Start();
             Console.WriteLine("Listening...");
+            Console.WriteLine(DateTime.Now);
 
 
             while (true)
@@ -49,7 +51,7 @@ namespace HttpServer
 
                 HttpListenerRequest request = context.Request;
                 HttpListenerResponse response = context.Response;
-                Console.WriteLine(request.ContentType);
+                
 
                 string text;
                 using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
@@ -57,9 +59,17 @@ namespace HttpServer
                     text = reader.ReadToEnd();
                 }
 
-                Console.WriteLine(text);
+                var data = JsonConvert.DeserializeObject<MyData>(text);
 
-                //string responseString = "<HTML><BODY> Request recieved! </BODY></HTML>";
+                Console.WriteLine("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+                Console.WriteLine(DateTime.Now);
+                Console.WriteLine(data.Fname);
+                Console.WriteLine("Content MimeType: " + request.ContentType);
+                Console.WriteLine("Login: " + data.login);
+                Console.WriteLine("Offset: " + data.offset);
+                Console.WriteLine("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+
+
                 string responseString = "done";
                 byte[] buffer = Encoding.UTF8.GetBytes(responseString);
                 response.ContentLength64 = buffer.Length;
@@ -71,6 +81,34 @@ namespace HttpServer
             }
                       
             listener.Stop();
+        }
+
+
+        public class MyData
+        {
+            public string data
+            {
+                get;
+                set;
+            }
+
+            public string login
+            {
+                get;
+                set;
+            }
+
+            public string offset
+            {
+                get;
+                set;
+            }
+
+            public string Fname
+            {
+                get;
+                set;
+            }
         }
 
 
