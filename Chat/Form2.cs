@@ -127,7 +127,7 @@ namespace Chat
                 {
                     MessageBox.Show("File successfully sent");
                     
-                    printMessage(login, "file:///" + fileDir.Replace(' ', (char)160));
+                    printMessage(login, "file:///"+fileDir.Replace(' ', (char)160));
                     //ssylka na otkrytie
                 }
 
