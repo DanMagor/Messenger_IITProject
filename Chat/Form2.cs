@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Net;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace Chat
 {
@@ -17,6 +18,8 @@ namespace Chat
     {
         private Connection connection;
         private string login;
+        private string uid = "user1";
+        string prefix = "http://localhost:4201/";
 
         private Thread listener;
 
@@ -96,7 +99,8 @@ namespace Chat
 
             if (message.Length != 0)
             {
-                string data = "{\"login\":\"" + this.login + "\",\"data\":\"" + message + "\",\"offset\":\"0\"}";
+                string data = "{\"uid\":\"" + this.uid + "\",\"login\":\"" + 
+                    this.login + "\",\"data\":\"" + message + "\",\"offset\":\"0\"}";
                 if (connection.POST(mimeType, data) == "done")
                 {
                     printMessage(login, constMessage);
@@ -130,13 +134,14 @@ namespace Chat
                 string b64String = Convert.ToBase64String(byteArr);
                 string[] splitted = fileDir.Split('\\');
                 string fileName = splitted[splitted.Length - 1];
-                string data = "{\"login\":\"" + this.login + "\",\"data\":\"" + b64String + "\",\"Fname\":\"" + fileName + "\",\"offset\":\"0\"}";
+                string data = "{\"uid\":\"" + this.uid + "\",\"login\":\"" + 
+                    this.login + "\",\"data\":\"" + b64String + "\",\"Fname\":\"" + fileName + "\",\"offset\":\"0\"}";
 
                 if (connection.POST(fileExt, data) == "done")
                 {
                     MessageBox.Show("File successfully sent");
                     
-                    printMessage(login, "file:///"+fileDir.Replace(' ', (char)160));
+                    printMessage(login, "file:///" + fileDir.Replace(' ', (char)160));
                     //ssylka na otkrytie
                 }
 
@@ -164,8 +169,8 @@ namespace Chat
             System.Diagnostics.Process.Start(e.LinkText);
         }
 
-        private  void HttpListener() {
-            string prefix = "http://localhost:4202/";
+        private void HttpListener() {
+            
 
             HttpListener listener = new HttpListener();
 
@@ -188,32 +193,28 @@ namespace Chat
             listener.Stop();
         }
 
-        private  void Proccess(HttpListenerContext context)
+        private void Proccess(HttpListenerContext context)
         {
             string filename = context.Request.Url.Query;
-            Console.WriteLine(filename);
+            
 
             HttpListenerRequest request = context.Request;
             HttpListenerResponse response = context.Response;
-            Console.WriteLine(request.ContentType);
+            
 
-            string text;
+            string text; // Recieved JSON Object
             using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
             {
                 text = reader.ReadToEnd();
             }
 
-            Console.WriteLine(text);
-            try
+            var data = JsonConvert.DeserializeObject<MyData>(text); //Deserealizing JSON
+
+            if(request.ContentType == "text/message") // Printing message
             {
-                printMessage("login", text);
-            }
-            catch (Exception e) {
-                MessageBox.Show("Ошибка в печати блять!");
+                printMessage(data.Login, Encoding.UTF8.GetString(Convert.FromBase64String(data.Data)));
             }
 
-
-            //string responseString = "<HTML><BODY> Request recieved! </BODY></HTML>";
             string responseString = "done";
             byte[] buffer = Encoding.UTF8.GetBytes(responseString);
             response.ContentLength64 = buffer.Length;
@@ -222,6 +223,45 @@ namespace Chat
             output.Write(buffer, 0, buffer.Length);
 
             output.Close();
+        }
+
+
+        /*
+        * 
+        * Class representation of JSON object 
+        * 
+        */
+        public class MyData
+        {
+            public string Data
+            {
+                get;
+                set;
+            }
+
+            public string Login
+            {
+                get;
+                set;
+            }
+
+            public string Offset
+            {
+                get;
+                set;
+            }
+
+            public string Fname
+            {
+                get;
+                set;
+            }
+
+            public string UID
+            {
+                get;
+                set;
+            }
         }
 
     }
