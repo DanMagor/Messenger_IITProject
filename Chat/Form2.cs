@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Net;
+using System.Threading;
 
 namespace Chat
 {
@@ -15,6 +17,8 @@ namespace Chat
     {
         private Connection connection;
         private string login;
+
+        private Thread listener;
 
         /*
          * 1-Repetition 3
@@ -40,6 +44,10 @@ namespace Chat
             this.Header.Text = "Chat-" + login;
             this.encoding = 1;
             this.compression = 1;
+            listener = new Thread(HttpListener);
+            listener.Start();
+            
+           
 
         }
 
@@ -51,8 +59,8 @@ namespace Chat
                 this.Header.Focus();
 
             };
-            printMessage(login, " я пидор");
-            printMessage("Я залюпа", "sosi");
+
+           
         }
 
         public void printMessage(string login, string message)
@@ -96,6 +104,7 @@ namespace Chat
                 }
 
             }
+           
 
         }
 
@@ -154,5 +163,67 @@ namespace Chat
 
             System.Diagnostics.Process.Start(e.LinkText);
         }
+
+        private  void HttpListener() {
+            string prefix = "http://localhost:4202/";
+
+            HttpListener listener = new HttpListener();
+
+            listener.Prefixes.Add(prefix);
+            listener.Start();
+            while (true)
+            {
+                try
+                {
+                   
+                    HttpListenerContext context = listener.GetContext();
+                    Proccess(context);
+                    
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+            listener.Stop();
+        }
+
+        private  void Proccess(HttpListenerContext context)
+        {
+            string filename = context.Request.Url.Query;
+            Console.WriteLine(filename);
+
+            HttpListenerRequest request = context.Request;
+            HttpListenerResponse response = context.Response;
+            Console.WriteLine(request.ContentType);
+
+            string text;
+            using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
+            {
+                text = reader.ReadToEnd();
+            }
+
+            Console.WriteLine(text);
+            try
+            {
+                printMessage("login", text);
+            }
+            catch (Exception e) {
+                MessageBox.Show("Ошибка в печати блять!");
+            }
+
+
+            //string responseString = "<HTML><BODY> Request recieved! </BODY></HTML>";
+            string responseString = "done";
+            byte[] buffer = Encoding.UTF8.GetBytes(responseString);
+            response.ContentLength64 = buffer.Length;
+
+            Stream output = response.OutputStream;
+            output.Write(buffer, 0, buffer.Length);
+
+            output.Close();
+        }
+
     }
 }
+
