@@ -48,6 +48,7 @@ namespace Chat
             this.encoding = 1;
             this.compression = 1;
             listener = new Thread(HttpListener);
+            listener.IsBackground = true;
             listener.Start();
             
            
