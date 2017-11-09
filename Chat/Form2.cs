@@ -211,9 +211,20 @@ namespace Chat
 
             var data = JsonConvert.DeserializeObject<MyData>(text); //Deserealizing JSON
 
-            if(request.ContentType == "text/message") // Printing message
+            if (request.ContentType == "text/message") // Printing message
             {
                 printMessage(data.Login, Encoding.UTF8.GetString(Convert.FromBase64String(data.Data)));
+            }
+            else
+            {
+                if (!Directory.Exists(data.UID))
+                    Directory.CreateDirectory(data.UID);
+                BinaryWriter writer = new BinaryWriter(File.Open(data.UID+"\\"+data.Fname,FileMode.Create));
+               
+                writer.Write(Convert.FromBase64String(data.Data));
+                writer.Close();
+                printMessage("System", "You received a new file from " + data.UID);
+
             }
 
             string responseString = "done";
