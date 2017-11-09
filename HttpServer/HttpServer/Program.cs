@@ -50,50 +50,50 @@ namespace HttpServer
 
                 }
             }
-
-
-            void Proccess(HttpListenerContext context)
-            {
-                HttpListenerRequest request = context.Request;
-                HttpListenerResponse response = context.Response;
-                Console.WriteLine();
-
-                string text;
-                using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
-                {
-                    text = reader.ReadToEnd();
-                }
-
-                var data = JsonConvert.DeserializeObject<MyData>(text); // Deserealizing JSON
-
-                Console.WriteLine("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
-                Console.WriteLine(DateTime.Now);
-                Console.WriteLine(data.Fname);
-                Console.WriteLine("Content MimeType: " + request.ContentType);
-                Console.WriteLine("Login: " + data.Login);
-                Console.WriteLine("UID: " + data.UID);
-                Console.WriteLine("Offset: " + data.Offset);
-                Console.WriteLine("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
-
-
-                //File.WriteAllBytes(@"C:\Users\Herman\Desktop\temprep\" + data.Fname,
-                //    Convert.FromBase64String(AddNoise(Convert.FromBase64String(data.data))));
-
-
-                string responseString = "done";
-                byte[] buffer = Encoding.UTF8.GetBytes(responseString);
-                response.ContentLength64 = buffer.Length;
-
-                Stream output = response.OutputStream;
-                output.Write(buffer, 0, buffer.Length);
-
-                output.Close();
-
-
-                POST(text, _usermap[data.UID], request.ContentType); // Making POST to client
-            }
                       
             listener.Stop();
+        }
+
+
+        static void Proccess(HttpListenerContext context)
+        {
+            HttpListenerRequest request = context.Request;
+            HttpListenerResponse response = context.Response;
+            Console.WriteLine();
+
+            string text;
+            using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
+            {
+                text = reader.ReadToEnd();
+            }
+
+            var data = JsonConvert.DeserializeObject<MyData>(text); // Deserealizing JSON
+
+            Console.WriteLine("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+            Console.WriteLine(DateTime.Now);
+            Console.WriteLine(data.Fname);
+            Console.WriteLine("Content MimeType: " + request.ContentType);
+            Console.WriteLine("Login: " + data.Login);
+            Console.WriteLine("UID: " + data.UID);
+            Console.WriteLine("Offset: " + data.Offset);
+            Console.WriteLine("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+
+
+            //File.WriteAllBytes(@"C:\Users\Herman\Desktop\temprep\" + data.Fname,
+            //    Convert.FromBase64String(AddNoise(Convert.FromBase64String(data.data))));
+
+
+            string responseString = "done";
+            byte[] buffer = Encoding.UTF8.GetBytes(responseString);
+            response.ContentLength64 = buffer.Length;
+
+            Stream output = response.OutputStream;
+            output.Write(buffer, 0, buffer.Length);
+
+            output.Close();
+
+
+            POST(text, _usermap[data.UID], request.ContentType); // Making POST to client
         }
 
         /*
