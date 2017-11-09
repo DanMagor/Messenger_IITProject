@@ -20,6 +20,8 @@ namespace Chat
         private string login;
         private string uid = "user1";
         string prefix = "http://localhost:4201/";
+        //private string uid = "user2";
+        //string prefix = "http://localhost:4202/";
 
         private Thread listener;
 
@@ -220,6 +222,7 @@ namespace Chat
                 if (!Directory.Exists(data.UID))
                     Directory.CreateDirectory(data.UID);
                 BinaryWriter writer = new BinaryWriter(File.Open(data.UID+"\\"+data.Fname,FileMode.Create));
+                printMessage(data.Login, "file:///" + (new FileInfo(data.UID + "\\" + data.Fname).DirectoryName + "\\" + data.Fname).Replace(' ', (char)160));
                
                 writer.Write(Convert.FromBase64String(data.Data));
                 writer.Close();
