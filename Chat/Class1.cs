@@ -18,7 +18,7 @@ namespace Chat
         }
 
         //start repetition coding
-        static byte[] repetitionCode(byte[] source, int N)
+       public static byte[] repetitionCode(byte[] source, int N)
         {
             BitArray temp = new BitArray(source);
 
@@ -31,7 +31,7 @@ namespace Chat
             return BitArrayToByteArray(result);
         }
 
-        static byte[] repetitionDecode(BitArray source, int N)
+   public     static byte[] repetitionDecode(byte[] source, int N)
         {
             BitArray temp = new BitArray(source);
             BitArray result = new BitArray(temp.Length / N);
@@ -48,7 +48,7 @@ namespace Chat
             return BitArrayToByteArray(result);
         }
 
-        static byte[] hammingEncode(byte[] bin)
+        public static byte[] hammingEncode(byte[] bin)
         {
             string result = "";
             byte[] encodedArr = new byte[bin.Length * 2];
@@ -87,7 +87,7 @@ namespace Chat
             return encodedArr;
         }
 
-        static byte[] hammingDecode(byte[] bin)
+        public static byte[] hammingDecode(byte[] bin)
         {
             string result = "";
             byte[] decodedArr = new byte[bin.Length / 2];
