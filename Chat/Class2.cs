@@ -1,0 +1,61 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Collections;
+
+namespace Chat
+{
+   static class Compressions
+    {
+  
+
+         public  static byte[] RLECompress(byte[] binary)
+        {
+            List<byte> compressed = new List<byte>();
+            int counter = 1;
+            for (int i = 0; i < binary.Length; i++)
+            {
+                while (i + 1 < binary.Length && binary[i] == binary[i + 1])
+                {
+                    counter++;
+                    if (counter == 256)
+                    {
+                        compressed.Add(0);
+                        counter = 1;
+                    }
+                    i++;
+                }
+                compressed.Add(Convert.ToByte(counter));
+                compressed.Add(binary[i]);
+                counter = 1;
+            }
+            return compressed.ToArray();
+        }
+
+       public static byte[] RLEDecompress(byte[] compressed)
+        {
+            List<byte> decompressed = new List<byte>();
+            byte tmp = 0;
+            int count = 0;
+            for (int i = 0; i < compressed.Length; i++)
+            {
+                tmp = compressed[i];
+                if (tmp == 0)
+                {
+                    count += 255;
+                    continue;
+                }
+                count += tmp;
+                for (int j = 0; j < count; j++)
+                {
+                    decompressed.Add(compressed[i + 1]);
+                }
+                i++;
+                count = 0;
+            }
+            return decompressed.ToArray();
+        }
+    }
+}

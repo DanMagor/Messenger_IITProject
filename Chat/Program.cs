@@ -52,7 +52,7 @@ namespace Chat
             // Set the Method property of the request to POST.
             request.Method = "POST";
             // Create POST data and convert it to a byte array.
-            byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+            byte[] byteArray = System.Text.Encoding.UTF8.GetBytes(postData);
             // Set the ContentType property of the WebRequest.
             request.ContentType = _mappings[mimeType];
             // Set the ContentLength property of the WebRequest.

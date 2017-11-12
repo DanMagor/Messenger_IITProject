@@ -96,9 +96,33 @@ namespace Chat
             string message = this.messageBox.Text;
             string constMessage = message;
             string mimeType = "msg";
-            byte[] byteArray = Encoding.UTF8.GetBytes(message);
+            byte[] byteArray = System.Text.Encoding.UTF8.GetBytes(message);
+            byte[] byteArrayToSend;              ;
 
-            message = Convert.ToBase64String(byteArray);
+            switch (compression) {
+                case 2:
+                    byteArrayToSend = Compressions.RLECompress(byteArray);
+                    break;
+                default:
+                    byteArrayToSend = byteArray;
+                    break;
+            }
+
+            switch (encoding) {
+                case 0:
+                    byteArrayToSend = Encodings.repetitionCode(byteArrayToSend, 3);
+                    break;
+                case 1:
+                    byteArrayToSend = Encodings.repetitionCode(byteArrayToSend, 5);
+                    break;
+                case 2:
+                    byteArrayToSend = Encodings.hammingEncode(byteArrayToSend);
+                    break;
+                default: break;
+            }
+
+            message = Convert.ToBase64String(byteArrayToSend);
+
 
             if (message.Length != 0)
             {
@@ -134,7 +158,32 @@ namespace Chat
             {
                 
                 byte[] byteArr = File.ReadAllBytes(fileDir);
-                string b64String = Convert.ToBase64String(byteArr);
+                byte[] byteArrayToSend;
+                switch (compression)
+                {
+                    case 2:
+                        byteArrayToSend = Compressions.RLECompress(byteArr);
+                        break;
+                    default:
+                        byteArrayToSend = byteArr;
+                        break;
+                }
+
+                switch (encoding)
+                {
+                    case 0:
+                        byteArrayToSend = Encodings.repetitionCode(byteArrayToSend, 3);
+                        break;
+                    case 1:
+                        byteArrayToSend = Encodings.repetitionCode(byteArrayToSend, 5);
+                        break;
+                    case 2:
+                        byteArrayToSend = Encodings.hammingEncode(byteArrayToSend);
+                        break;
+                    default: break;
+                }
+                
+                string b64String = Convert.ToBase64String(byteArrayToSend);
                 string[] splitted = fileDir.Split('\\');
                 string fileName = splitted[splitted.Length - 1];
                 string data = "{\"uid\":\"" + this.uid + "\",\"login\":\"" + 
@@ -215,7 +264,38 @@ namespace Chat
 
             if (request.ContentType == "text/message") // Printing message
             {
-                printMessage(data.Login, Encoding.UTF8.GetString(Convert.FromBase64String(data.Data)));
+                byte[] messageArray=Convert.FromBase64String(data.Data);
+                byte[] byteArrayToGet;
+           
+                switch (encoding)
+                {
+                    case 0:
+                        byteArrayToGet = Encodings.repetitionDecode(messageArray, 3);
+                        break;
+                    case 1:
+                        byteArrayToGet = Encodings.repetitionCode(messageArray, 5);
+                        break;
+                    case 2:
+                        byteArrayToGet = Encodings.hammingDecode(messageArray);
+                        break;
+
+                    default:
+                        byteArrayToGet = messageArray;
+                            break;
+                }
+                switch (compression)
+                {
+                    case 2:
+                        byteArrayToGet = Compressions.RLEDecompress(byteArrayToGet);
+                        break;
+                    default:
+                  
+                        break;
+                }
+                string message = System.Text.Encoding.UTF8.GetString(byteArrayToGet);
+
+                printMessage(data.Login, message);
+
             }
             else
             {
@@ -223,15 +303,47 @@ namespace Chat
                     Directory.CreateDirectory(data.UID);
                 BinaryWriter writer = new BinaryWriter(File.Open(data.UID+"\\"+data.Fname,FileMode.Create));
                 printMessage(data.Login, "file:///" + (new FileInfo(data.UID + "\\" + data.Fname).DirectoryName + "\\" + data.Fname).Replace(' ', (char)160));
-               
-                writer.Write(Convert.FromBase64String(data.Data));
+
+
+
+                byte[] messageArray = Convert.FromBase64String(data.Data);
+                byte[] byteArrayToGet;
+
+                switch (encoding)
+                {
+                    case 0:
+                        byteArrayToGet = Encodings.repetitionDecode(messageArray, 3);
+                        break;
+                    case 1:
+                        byteArrayToGet = Encodings.repetitionCode(messageArray, 5);
+                        break;
+                    case 2:
+                        byteArrayToGet = Encodings.hammingDecode(messageArray);
+                        break;
+
+                    default:
+                        byteArrayToGet = messageArray;
+                        break;
+                }
+                switch (compression)
+                {
+                    case 2:
+                        byteArrayToGet = Compressions.RLEDecompress(byteArrayToGet);
+                        break;
+                    default:
+
+                        break;
+                }
+              
+
+                writer.Write(byteArrayToGet);
                 writer.Close();
                 printMessage("System", "You received a new file from " + data.UID);
 
             }
 
             string responseString = "done";
-            byte[] buffer = Encoding.UTF8.GetBytes(responseString);
+            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
             response.ContentLength64 = buffer.Length;
 
             Stream output = response.OutputStream;
