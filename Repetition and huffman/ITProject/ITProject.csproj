@@ -42,8 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HuffmanCompration.cs" />
+    <Compile Include="HuffmanNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RepetitionCoding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
