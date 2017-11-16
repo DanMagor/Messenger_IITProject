@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ namespace ITProject
         private byte value;
         private int count;
         private bool isLeaaf ;
+
 
         public HuffmanNode(byte value)
         {
@@ -55,13 +57,37 @@ namespace ITProject
             return count;
         }
 
-        public void print()
+        public void Print()
         {
-            if (!isLeaaf) { left.print(); right.print(); }
-            else
+            if (isLeaaf)
                 Console.WriteLine(value.ToString() + '\t' + count.ToString());
-                
+            else {
+                left.Print();
+                right.Print();
+            }
 
+        }
+
+        public void ToMap(Hashtable map, BitArray code)
+        {
+            if (isLeaaf)
+            {
+                BitArray buf = new BitArray(code.Length);
+                for (int i = 0; i < buf.Length; i++) buf[i] = code[i];
+                    map.Add(value, buf);
+            }
+            else
+            {
+                BitArray newCode = new BitArray(code.Length + 1);
+                for (int i = 0; i < code.Length; i++)
+                    newCode[i] = code[i];
+
+                newCode[code.Length] = true;
+                left.ToMap(map, newCode);
+
+                newCode[code.Length] = false;
+                right.ToMap(map, newCode);
+            }
         }
     }
 }

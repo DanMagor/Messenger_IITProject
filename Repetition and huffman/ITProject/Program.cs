@@ -18,30 +18,32 @@ namespace ITProject
         static void Main(string[] args)
         {
 
-            string extention = "." + Console.ReadLine();
+            string extention = ".pptx";// + Console.ReadLine();
             byte[] file = File.ReadAllBytes("in"+extention);
-            BitArray source = new BitArray(file);
+            //BitArray source = new BitArray(file);
 
-            foreach(bool b in source)
+            /*foreach(bool b in source)
                 Console.Write(Convert.ToByte(b));//*/
-            //source = RepetitionCoding.RepetitionCode(source,3);
-            /*Console.WriteLine('\n');
-            /foreach (bool b in source)
+
+            //file = RepetitionCoding.RepetitionCode(file,3);
+            //Console.WriteLine('\n');
+            /*foreach (bool b in source)
                 Console.Write(Convert.ToByte(b));//*/
-            //source = RepetitionCoding.repetitionDECode(source, 3);
+            //file = RepetitionCoding.RepetitionDECode(file, 3);
             /*Console.WriteLine('\n');
             foreach (bool b in source)
                 Console.Write(Convert.ToByte(b));//*/
 
-            
-            HuffmanCompration.Compration(file);
 
 
+            byte[] mes = HuffmanCompration.Compration(file);
+            Console.WriteLine(file.Length);
+            Console.WriteLine(mes.Length);
 
-            //BinaryWriter bw = new BinaryWriter(File.OpenWrite("out" + extention));
-            //bw.Write(RepetitionCoding.BitArrayToByteArray(source));            
-            
-            //bw.Close();
+            BinaryWriter bw = new BinaryWriter(File.OpenWrite("out" + extention));
+            bw.Write(HuffmanCompration.Decompration(mes));            
+
+            bw.Close();
             Console.ReadLine();
         }
     }
