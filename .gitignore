@@ -303,3 +303,16 @@ __pycache__/
 
 # OpenCover UI analysis results
 OpenCover/
+SQL/SQL.cs
+SQL/ConsoleApp1/ConsoleApp1/packages.config
+SQL/ConsoleApp1/ConsoleApp1/Properties/AssemblyInfo.cs
+SQL/ConsoleApp1/ConsoleApp1/Program.cs
+SQL/ConsoleApp1/ConsoleApp1/ConsoleApp1.csproj
+SQL/ConsoleApp1/ConsoleApp1/CollectStatistics.cs
+SQL/ConsoleApp1/ConsoleApp1/App.config
+SQL/ConsoleApp1/ConsoleApp1.sln
+SQL/Class4.cs
+SQL/Class3.cs
+SQL/Class2.cs
+SQL/Class1.cs
+SQL.zip

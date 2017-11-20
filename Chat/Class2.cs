@@ -9,9 +9,8 @@ namespace Chat
 {
    static class Compressions
     {
-  
 
-         public  static byte[] RLECompress(byte[] binary)
+         public static byte[] RLECompress(byte[] binary)
         {
             List<byte> compressed = new List<byte>();
             int counter = 1;
@@ -34,7 +33,7 @@ namespace Chat
             return compressed.ToArray();
         }
 
-       public static byte[] RLEDecompress(byte[] compressed)
+         public static byte[] RLEDecompress(byte[] compressed)
         {
             List<byte> decompressed = new List<byte>();
             byte tmp = 0;
@@ -57,5 +56,6 @@ namespace Chat
             }
             return decompressed.ToArray();
         }
+
     }
 }

@@ -17,34 +17,34 @@ namespace Chat
             return ret;
         }
 
-        //start repetition coding
-       public static byte[] repetitionCode(byte[] source, int N)
+        
+        public static byte[] repetitionCode(byte[] file, int N)
         {
-            BitArray temp = new BitArray(source);
-
-            BitArray result = new BitArray(temp.Length * N);
-            for (int i = 0; i < temp.Length; i++)
-                for (int j = 0; j < N; j++)
-                {
-                    result[i * N + j] = temp.Get(i);
-                }
-            return BitArrayToByteArray(result);
+            byte[] result = new byte[file.Length * N];
+            for (int i = 0; i < file.Length; i++)
+            {
+                result[i] = file[i];
+                result[file.Length + i] = file[i];
+                result[file.Length + file.Length + i] = file[i];
+            }
+            return result;
         }
 
-   public     static byte[] repetitionDecode(byte[] source, int N)
+        public static byte[] repetitionDecode(byte[] file, int N)
         {
-            BitArray temp = new BitArray(source);
-            BitArray result = new BitArray(temp.Length / N);
+            BitArray source = new BitArray(file);
+            BitArray result = new BitArray(source.Length / N);
             for (int i = 0; i < result.Length; i++)
             {
                 int b0 = 0, b1 = 0;
-                for (int j = 0; j < N; j++)
-                {
-                    if (temp.Get(i * N + j)) b1++;
-                    else b0++;
-                }
+
+                if (source[i]) b1++; else b0++;
+                if (source[result.Length + i]) b1++; else b0++;
+                if (source[result.Length + result.Length + i]) b1++; else b0++;
+
                 result[i] = b1 > b0;
             }
+
             return BitArrayToByteArray(result);
         }
 
