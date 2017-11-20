@@ -59,7 +59,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 2;
-            this.button2.Text = "Attach";
+            this.button2.Text = "Send file";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -72,9 +72,6 @@
             this.messageViewer.TabIndex = 3;
             this.messageViewer.Text = "";
             this.messageViewer.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.Link_Clicked);
-                //new System.EventHandler(this.Link_Clicked);
-
-
             // 
             // button1
             // 

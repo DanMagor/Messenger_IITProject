@@ -29,7 +29,7 @@ namespace Chat
          * 1-Repetition 3
          * 2-Repetition 5
          * 3-Hamming
-         * 4-LDPC
+         * 4-convolution
          */
         private int encoding;
         /*
@@ -94,14 +94,23 @@ namespace Chat
         private void sendMessage_Click(object sender, EventArgs e)
         {
             string message = this.messageBox.Text;
+            if (message.Length == 0) {
+                return;
+            }
             string constMessage = message;
             string mimeType = "msg";
             byte[] byteArray = System.Text.Encoding.UTF8.GetBytes(message);
             byte[] byteArrayToSend;              ;
 
             switch (compression) {
+                case 1:
+                    byteArrayToSend = Compressions.huffmanCompress(byteArray);
+                    break;
                 case 2:
                     byteArrayToSend = Compressions.RLECompress(byteArray);
+                    break;
+                case 3:
+                    byteArrayToSend = Compressions.CompressionLZ78(byteArray);
                     break;
                 default:
                     byteArrayToSend = byteArray;
@@ -109,14 +118,17 @@ namespace Chat
             }
 
             switch (encoding) {
-                case 0:
-                    byteArrayToSend = Encodings.repetitionCode(byteArrayToSend, 3);
-                    break;
                 case 1:
-                    byteArrayToSend = Encodings.repetitionCode(byteArrayToSend, 5);
+                    byteArrayToSend = Encodings.RepetitionCode(byteArrayToSend, 3);
                     break;
                 case 2:
+                    byteArrayToSend = Encodings.RepetitionCode(byteArrayToSend, 5);
+                    break;
+                case 3:
                     byteArrayToSend = Encodings.hammingEncode(byteArrayToSend);
+                    break;
+                case 4:
+                    byteArrayToSend = Encodings.ConvolutionalСode(byteArrayToSend);
                     break;
                 default: break;
             }
@@ -159,10 +171,17 @@ namespace Chat
                 
                 byte[] byteArr = File.ReadAllBytes(fileDir);
                 byte[] byteArrayToSend;
+
                 switch (compression)
                 {
+                    case 1:
+                        byteArrayToSend = Compressions.huffmanCompress(byteArr);
+                        break;
                     case 2:
                         byteArrayToSend = Compressions.RLECompress(byteArr);
+                        break;
+                    case 3:
+                        byteArrayToSend = Compressions.CompressionLZ78(byteArr);
                         break;
                     default:
                         byteArrayToSend = byteArr;
@@ -171,18 +190,22 @@ namespace Chat
 
                 switch (encoding)
                 {
-                    case 0:
-                        byteArrayToSend = Encodings.repetitionCode(byteArrayToSend, 3);
-                        break;
                     case 1:
-                        byteArrayToSend = Encodings.repetitionCode(byteArrayToSend, 5);
+                        byteArrayToSend = Encodings.RepetitionCode(byteArrayToSend, 3);
                         break;
                     case 2:
+                        byteArrayToSend = Encodings.RepetitionCode(byteArrayToSend, 5);
+                        break;
+                    case 3:
                         byteArrayToSend = Encodings.hammingEncode(byteArrayToSend);
+                        break;
+                    case 4:
+                        byteArrayToSend = Encodings.ConvolutionalСode(byteArrayToSend);
                         break;
                     default: break;
                 }
-                
+
+
                 string b64String = Convert.ToBase64String(byteArrayToSend);
                 string[] splitted = fileDir.Split('\\');
                 string fileName = splitted[splitted.Length - 1];
@@ -269,15 +292,20 @@ namespace Chat
            
                 switch (encoding)
                 {
-                    case 0:
-                        byteArrayToGet = Encodings.repetitionDecode(messageArray, 3);
-                        break;
                     case 1:
-                        byteArrayToGet = Encodings.repetitionCode(messageArray, 5);
+                        byteArrayToGet = Encodings.RepetitionDECode(messageArray, 3);
                         break;
                     case 2:
+                        byteArrayToGet = Encodings.RepetitionDECode(messageArray, 5);
+                        break;
+                    case 3:
                         byteArrayToGet = Encodings.hammingDecode(messageArray);
                         break;
+                    case 4:
+                        byteArrayToGet = Encodings.DecodingConvolutionalCode(messageArray);
+                        break;
+
+
 
                     default:
                         byteArrayToGet = messageArray;
@@ -285,8 +313,14 @@ namespace Chat
                 }
                 switch (compression)
                 {
+                    case 1:
+                        byteArrayToGet = Compressions.huffmanDecompress(byteArrayToGet);
+                        break;
                     case 2:
                         byteArrayToGet = Compressions.RLEDecompress(byteArrayToGet);
+                        break;
+                    case 3:
+                        byteArrayToGet = Compressions.DecompressionLZ78(byteArrayToGet);
                         break;
                     default:
                   
@@ -311,15 +345,20 @@ namespace Chat
 
                 switch (encoding)
                 {
-                    case 0:
-                        byteArrayToGet = Encodings.repetitionDecode(messageArray, 3);
-                        break;
                     case 1:
-                        byteArrayToGet = Encodings.repetitionCode(messageArray, 5);
+                        byteArrayToGet = Encodings.RepetitionDECode(messageArray, 3);
                         break;
                     case 2:
+                        byteArrayToGet = Encodings.RepetitionDECode(messageArray, 5);
+                        break;
+                    case 3:
                         byteArrayToGet = Encodings.hammingDecode(messageArray);
                         break;
+                    case 4:
+                        byteArrayToGet = Encodings.DecodingConvolutionalCode(messageArray);
+                        break;
+
+
 
                     default:
                         byteArrayToGet = messageArray;
@@ -327,14 +366,19 @@ namespace Chat
                 }
                 switch (compression)
                 {
+                    case 1:
+                        byteArrayToGet = Compressions.huffmanDecompress(byteArrayToGet);
+                        break;
                     case 2:
                         byteArrayToGet = Compressions.RLEDecompress(byteArrayToGet);
+                        break;
+                    case 3:
+                        byteArrayToGet = Compressions.DecompressionLZ78(byteArrayToGet);
                         break;
                     default:
 
                         break;
                 }
-              
 
                 writer.Write(byteArrayToGet);
                 writer.Close();

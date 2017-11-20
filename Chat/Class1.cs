@@ -17,130 +17,154 @@ namespace Chat
             return ret;
         }
 
-        
-        public static byte[] repetitionCode(byte[] file, int N)
+        //start repetition coding
+        public static byte[] RepetitionCode(byte[] file, int N)
         {
-            byte[] result = new byte[file.Length * N];
-            for (int i = 0; i < file.Length; i++)
-            {
-                result[i] = file[i];
-                result[file.Length + i] = file[i];
-                result[file.Length + file.Length + i] = file[i];
-            }
-            return result;
+            BitArray source = new BitArray(file);
+            BitArray result = new BitArray(source.Length * N);
+            for (int i = 0; i < source.Length; i++)
+                for (int j = 0; j < N; j++)
+                {
+                    result[i * N + j] = source.Get(i);
+                }
+            return BitArrayToByteArray(result);
         }
 
-        public static byte[] repetitionDecode(byte[] file, int N)
+        public static byte[] RepetitionDECode(byte[] file, int N)
         {
             BitArray source = new BitArray(file);
             BitArray result = new BitArray(source.Length / N);
             for (int i = 0; i < result.Length; i++)
             {
                 int b0 = 0, b1 = 0;
-
-                if (source[i]) b1++; else b0++;
-                if (source[result.Length + i]) b1++; else b0++;
-                if (source[result.Length + result.Length + i]) b1++; else b0++;
-
+                for (int j = 0; j < N; j++)
+                {
+                    if (source.Get(i * N + j)) b1++;
+                    else b0++;
+                }
                 result[i] = b1 > b0;
             }
 
             return BitArrayToByteArray(result);
         }
 
-        public static byte[] hammingEncode(byte[] bin)
+        static byte BitArrayToByteReversed(BitArray bits)
         {
-            string result = "";
+            for (int i = 0; i < bits.Length; i++)
+                bits[i] = !bits[i];
+            byte[] bytes = new byte[1];
+            bits.CopyTo(bytes, 0);
+            return bytes[0];
+        }
+
+        static byte BitArrayToByte(BitArray bits)
+        {
+            byte[] bytes = new byte[1];
+            bits.CopyTo(bytes, 0);
+            return bytes[0];
+        }
+
+       public static byte[] hammingEncode(byte[] bin)
+        {
             byte[] encodedArr = new byte[bin.Length * 2];
             int encodeCounter = 0;
-            int sum = 0;
-            string[] tmp = new string[2];
-            int[,] encodeMatrix = new int[,] { { 0,1,1,1},{ 1,0,1,1},{ 1,1,0,1},{ 1,0,0,0},
-                {0,1,0,0 },{ 0,0,1,0},{ 0,0,0,1} };
+            bool sum = false;
+            BitArray tmp;
+            BitArray result = new BitArray(8);
+            bool[,] encodeMatrix = new bool[,] { { false,true,true,true},{ true,false,true,true},{ true,true,false,true},{ true,false,false,false},
+                {false,true,false,false },{ false,false,true,false},{ false,false,false,true} };
             for (int i = 0; i < bin.Length; i++)
             {
-                tmp[0] = Convert.ToString(bin[i], 2).PadLeft(8, '0').Substring(0, 4);
-                tmp[1] = Convert.ToString(bin[i], 2).PadLeft(8, '0').Substring(4, 4);
-                result = "0";
+                tmp = new BitArray(new byte[] { bin[i] });
+                for (int j = 0; j < tmp.Length; j++) tmp[j] = !tmp[j];
+                result[7] = false;
                 for (int j = 0; j < 7; j++)
                 {
                     for (int k = 0; k < 4; k++)
                     {
-                        sum ^= (Convert.ToInt32(tmp[0][k]) - 48) & encodeMatrix[j, k];
+                        sum ^= tmp[k] && encodeMatrix[j, k];
                     }
-                    result += sum;
-                    sum = 0;
+                    result[j] = sum;
+                    sum = false;
                 }
-                encodedArr[encodeCounter++] = Convert.ToByte(result, 2);
-                result = "0";
+                encodedArr[encodeCounter++] = BitArrayToByte(result);
+                result[7] = false;
                 for (int j = 0; j < 7; j++)
                 {
                     for (int k = 0; k < 4; k++)
                     {
-                        sum ^= (Convert.ToInt32(tmp[1][k]) - 48) & encodeMatrix[j, k];
+                        sum ^= tmp[k + 4] && encodeMatrix[j, k];
                     }
-                    result += sum;
-                    sum = 0;
+                    result[j] = sum;
+                    sum = false;
                 }
-                encodedArr[encodeCounter++] = Convert.ToByte(result, 2);
+                encodedArr[encodeCounter++] = BitArrayToByte(result);
             }
             return encodedArr;
         }
 
         public static byte[] hammingDecode(byte[] bin)
         {
-            string result = "";
             byte[] decodedArr = new byte[bin.Length / 2];
             int decodeCounter = 0;
-            char[] arr = new char[7];
-            string tmp = "";
-            int sum = 0;
+            int count = 0;
+            bool sum = false;
             int[] col = new int[3];
-            int[,] decodeMatrix = new int[,] { { 1, 0, 0, 0, 1, 1, 1 }, { 0, 1, 0, 1, 0, 1, 1 }, { 0, 0, 1, 1, 1, 0, 1 } };
+            BitArray tmp;
+            BitArray result = new BitArray(8);
+            bool[,] decodeMatrix = new bool[,] { { true, false, false, false, true, true, true }, { false, true, false, true, false, true, true },
+                { false, false, true, true, true, false, true } };
             for (int i = 0; i < bin.Length; i++)
             {
-                tmp = Convert.ToString(bin[i], 2).PadLeft(8, '0').Substring(1, 7);
+                tmp = new BitArray(new byte[] { bin[i] });
                 for (int j = 0; j < 3; j++)
                 {
                     for (int k = 0; k < 7; k++)
                     {
-                        sum ^= (Convert.ToInt32(tmp[k]) - 48) & decodeMatrix[j, k];
+                        sum ^= tmp[k] && decodeMatrix[j, k];
                     }
-                    col[j] = sum;
-                    sum = 0;
+                    col[j] = Convert.ToInt32(sum);
+                    sum = false;
                 }
                 if (col[0] == 0 && col[1] == 0 && col[2] == 0)
                 {
-                    result += tmp.Substring(3, 4);
-                    if (result.Length == 8)
+                    if (count == 0)
                     {
-                        decodedArr[decodeCounter++] = Convert.ToByte(result, 2);
-                        result = "";
+                        for (int j = 3; j < 7; j++) result[j - 3] = tmp[j];
+                        count++;
+                    }
+                    else
+                    {
+                        for (int j = 3; j < 7; j++) result[j + 1] = tmp[j];
+                        decodedArr[decodeCounter++] = BitArrayToByteReversed(result);
+                        count = 0;
                     }
                     continue;
                 }
                 for (int j = 0; j < 7; j++)
                 {
-                    if (decodeMatrix[0, j] == col[0] && decodeMatrix[1, j] == col[1] && decodeMatrix[2, j] == col[2])
+                    if (Convert.ToInt32(decodeMatrix[0, j]) == col[0] && Convert.ToInt32(decodeMatrix[1, j]) == col[1]
+                        && Convert.ToInt32(decodeMatrix[2, j]) == col[2])
                     {
                         switch (tmp[j])
                         {
-                            case '0':
-                                arr = tmp.ToCharArray();
-                                arr[j] = '1';
-                                tmp = new string(arr);
+                            case false:
+                                tmp[j] = true;
                                 break;
-                            case '1':
-                                arr = tmp.ToCharArray();
-                                arr[j] = '0';
-                                tmp = new string(arr);
+                            case true:
+                                tmp[j] = false;
                                 break;
                         }
-                        result += tmp.Substring(3, 4);
-                        if (result.Length == 8)
+                        if (count == 0)
                         {
-                            decodedArr[decodeCounter++] = Convert.ToByte(result, 2);
-                            result = "";
+                            for (int k = 3; k < 7; k++) result[k - 3] = tmp[k];
+                            count++;
+                        }
+                        else
+                        {
+                            for (int k = 3; k < 7; k++) result[k + 1] = tmp[k];
+                            decodedArr[decodeCounter++] = BitArrayToByteReversed(result);
+                            count = 0;
                         }
                         break;
                     }
@@ -148,6 +172,80 @@ namespace Chat
             }
             return decodedArr;
         }
+
+
+
+        public static byte[] ConvolutionalСode(byte[] byteArray)
+        {
+            BitArray bitArray = new BitArray(byteArray);
+        
+            BitArray codingBitArray = new BitArray(bitArray.Length * 2 + 8);
+            bool r1 = false, r2 = false;
+            for (int i = 0; i < bitArray.Length; i++)
+            {
+                codingBitArray[2 * i] = r2 ^ bitArray[i];
+                codingBitArray[2 * i + 1] = (r1 ^ bitArray[i]) ^ r2;
+                r2 = r1;
+                r1 = bitArray[i];
+            }
+            for (int i = 4; i > 0; i--)
+            {
+                codingBitArray[codingBitArray.Length - i * 2] = r2 ^ false;
+                codingBitArray[codingBitArray.Length - i * 2 + 1] = (r1 ^ false) ^ r2;
+                r2 = r1;
+                r1 = false;
+            }
+                    return BitArrayToByteArray(codingBitArray);
+        }
+
+        public static byte[] DecodingConvolutionalCode(byte[] byteArray)
+        {
+            BitArray bitArray = new BitArray(byteArray);
+            BitArray decodingBitArray = new BitArray((bitArray.Length - 8) / 2);
+            BitArray verifyingBitArray = new BitArray((bitArray.Length - 8) / 2 + 2);
+            BitArray computedBitArray = new BitArray((bitArray.Length - 8) / 2 + 2);
+            //PrintBitArray(bitArray);
+
+
+            for (int i = 0; i < decodingBitArray.Length; i++)
+            {
+                decodingBitArray[i] = bitArray[2 * (i + 1)] ^ bitArray[2 * (i + 1) + 1];
+            }
+
+            bool d1 = bitArray[2 * (decodingBitArray.Length + 1)] ^ bitArray[2 * (decodingBitArray.Length + 1) + 1];
+            bool d2 = bitArray[2 * (decodingBitArray.Length + 1 + 1)] ^ bitArray[2 * (decodingBitArray.Length + 1 + 1) + 1];
+            //PrintBitArray(decodingBitArray);
+
+            for (int i = 0; i < verifyingBitArray.Length; i++)
+            {
+                verifyingBitArray[i] = bitArray[2 * i];
+            }
+            //PrintBitArray(verifyingBitArray);
+
+            bool r1 = false, r2 = false;
+            for (int i = 0; i < decodingBitArray.Length; i++)
+            {
+                computedBitArray[i] = decodingBitArray[i] ^ r2;
+                r2 = r1;
+                r1 = decodingBitArray[i];
+
+            }
+            computedBitArray[computedBitArray.Length - 2] = d1 ^ r2;
+            computedBitArray[computedBitArray.Length - 1] = d2 ^ r1;
+          //  PrintBitArray(computedBitArray);
+
+            for (int i = 0; i < decodingBitArray.Length; i++)
+            {
+                if ((verifyingBitArray[i] != computedBitArray[i]) && (verifyingBitArray[i + 2] != computedBitArray[i + 2]))
+                {
+                    computedBitArray[i] = computedBitArray[i] ^ true;
+                    computedBitArray[i + 2] = computedBitArray[i + 2] ^ true;
+                    decodingBitArray[i] = decodingBitArray[i] ^ true;
+                }
+            }
+            return BitArrayToByteArray(decodingBitArray);
+        }
+
 
     }
 }

@@ -34,7 +34,7 @@ namespace Chat
                     break;
 
                 case 4:
-                    this.ldpc.Checked = true;
+                    this.convolution.Checked = true;
                     break;
                 default:
                    
@@ -77,7 +77,7 @@ namespace Chat
             {
                 encoding = 3;
             }
-            if (ldpc.Checked)
+            if (convolution.Checked)
             {
                 encoding = 4;
             }

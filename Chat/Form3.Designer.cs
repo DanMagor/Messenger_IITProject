@@ -32,11 +32,11 @@
             this.repetition5 = new System.Windows.Forms.RadioButton();
             this.hamming = new System.Windows.Forms.RadioButton();
             this.encodingGroup = new System.Windows.Forms.GroupBox();
-            this.ldpc = new System.Windows.Forms.RadioButton();
+            this.convolution = new System.Windows.Forms.RadioButton();
             this.compressionBox = new System.Windows.Forms.GroupBox();
-            this.huffman = new System.Windows.Forms.RadioButton();
-            this.rle = new System.Windows.Forms.RadioButton();
             this.lz78 = new System.Windows.Forms.RadioButton();
+            this.rle = new System.Windows.Forms.RadioButton();
+            this.huffman = new System.Windows.Forms.RadioButton();
             this.saveSettings = new System.Windows.Forms.Button();
             this.cancel = new System.Windows.Forms.Button();
             this.encodingGroup.SuspendLayout();
@@ -78,7 +78,7 @@
             // 
             // encodingGroup
             // 
-            this.encodingGroup.Controls.Add(this.ldpc);
+            this.encodingGroup.Controls.Add(this.convolution);
             this.encodingGroup.Controls.Add(this.repetition3);
             this.encodingGroup.Controls.Add(this.hamming);
             this.encodingGroup.Controls.Add(this.repetition5);
@@ -89,16 +89,16 @@
             this.encodingGroup.TabStop = false;
             this.encodingGroup.Text = "Encoding";
             // 
-            // ldpc
+            // convolution
             // 
-            this.ldpc.AutoSize = true;
-            this.ldpc.Location = new System.Drawing.Point(39, 122);
-            this.ldpc.Name = "ldpc";
-            this.ldpc.Size = new System.Drawing.Size(65, 21);
-            this.ldpc.TabIndex = 3;
-            this.ldpc.TabStop = true;
-            this.ldpc.Text = "LDPC";
-            this.ldpc.UseVisualStyleBackColor = true;
+            this.convolution.AutoSize = true;
+            this.convolution.Location = new System.Drawing.Point(39, 122);
+            this.convolution.Name = "convolution";
+            this.convolution.Size = new System.Drawing.Size(103, 21);
+            this.convolution.TabIndex = 3;
+            this.convolution.TabStop = true;
+            this.convolution.Text = "Convolution";
+            this.convolution.UseVisualStyleBackColor = true;
             // 
             // compressionBox
             // 
@@ -112,16 +112,16 @@
             this.compressionBox.TabStop = false;
             this.compressionBox.Text = "Compression";
             // 
-            // huffman
+            // lz78
             // 
-            this.huffman.AutoSize = true;
-            this.huffman.Location = new System.Drawing.Point(46, 40);
-            this.huffman.Name = "huffman";
-            this.huffman.Size = new System.Drawing.Size(82, 21);
-            this.huffman.TabIndex = 0;
-            this.huffman.TabStop = true;
-            this.huffman.Text = "Huffman";
-            this.huffman.UseVisualStyleBackColor = true;
+            this.lz78.AutoSize = true;
+            this.lz78.Location = new System.Drawing.Point(46, 95);
+            this.lz78.Name = "lz78";
+            this.lz78.Size = new System.Drawing.Size(67, 21);
+            this.lz78.TabIndex = 2;
+            this.lz78.TabStop = true;
+            this.lz78.Text = "LZ-78";
+            this.lz78.UseVisualStyleBackColor = true;
             // 
             // rle
             // 
@@ -134,16 +134,16 @@
             this.rle.Text = "RLE";
             this.rle.UseVisualStyleBackColor = true;
             // 
-            // lz78
+            // huffman
             // 
-            this.lz78.AutoSize = true;
-            this.lz78.Location = new System.Drawing.Point(46, 95);
-            this.lz78.Name = "lz78";
-            this.lz78.Size = new System.Drawing.Size(67, 21);
-            this.lz78.TabIndex = 2;
-            this.lz78.TabStop = true;
-            this.lz78.Text = "LZ-78";
-            this.lz78.UseVisualStyleBackColor = true;
+            this.huffman.AutoSize = true;
+            this.huffman.Location = new System.Drawing.Point(46, 40);
+            this.huffman.Name = "huffman";
+            this.huffman.Size = new System.Drawing.Size(82, 21);
+            this.huffman.TabIndex = 0;
+            this.huffman.TabStop = true;
+            this.huffman.Text = "Huffman";
+            this.huffman.UseVisualStyleBackColor = true;
             // 
             // saveSettings
             // 
@@ -190,7 +190,7 @@
         private System.Windows.Forms.RadioButton repetition5;
         private System.Windows.Forms.RadioButton hamming;
         private System.Windows.Forms.GroupBox encodingGroup;
-        private System.Windows.Forms.RadioButton ldpc;
+        private System.Windows.Forms.RadioButton convolution;
         private System.Windows.Forms.GroupBox compressionBox;
         private System.Windows.Forms.RadioButton lz78;
         private System.Windows.Forms.RadioButton rle;
